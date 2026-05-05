@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>مسيّر مشاريع التلحيم</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap');
+:root {
+  --bg:#111;--panel:#1a1a1a;--card:#212121;--border:rgba(255,160,50,.15);
+  --accent:#ff9f1c;--accent2:#c97000;--blue:#3b9eff;--green:#22c55e;
+  --red:#ef4444;--purple:#a78bfa;--gold:#fbbf24;
+  --text:#f0f0f0;--muted:#777;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+header{background:var(--panel);border-bottom:1px solid var(--border);padding:13px 22px;
+  display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.logo{display:flex;align-items:center;gap:11px;}
+.logo-ico{width:40px;height:40px;background:linear-gradient(135deg,var(--accent2),var(--accent));
+  border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;}
+.logo h1{font-size:16px;font-weight:800;color:var(--accent);}
+.logo p{font-size:10px;color:var(--muted);}
+
+.sbar{background:#151515;border-bottom:1px solid var(--border);padding:6px 22px;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.sst{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);}
+.sdot{width:7px;height:7px;border-radius:50%;background:var(--muted);}
+.sdot.ok{background:var(--green);box-shadow:0 0 5px var(--green);}
+.sdot.err{background:var(--red);box-shadow:0 0 5px var(--red);}
+.sdot.ld{background:var(--gold);animation:blink 1s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.sbtns{display:flex;gap:6px;}
+.sbtn{padding:4px 11px;border:1px solid var(--border);border-radius:6px;background:transparent;
+  color:var(--text);font-family:'Tajawal',sans-serif;font-size:11px;font-weight:600;cursor:pointer;transition:all .2s;}
+.sbtn:hover{border-color:var(--accent);color:var(--accent);}
+.sbtn.go{background:linear-gradient(135deg,var(--accent2),var(--accent));border-color:transparent;color:#000;font-weight:700;}
+
+.ntabs{display:flex;gap:2px;padding:11px 22px 0;border-bottom:1px solid var(--border);overflow-x:auto;}
+.ntab{padding:8px 14px;border:none;background:transparent;color:var(--muted);font-family:'Tajawal',sans-serif;
+  font-size:12px;font-weight:600;cursor:pointer;border-radius:7px 7px 0 0;white-space:nowrap;
+  transition:all .2s;border-bottom:2px solid transparent;}
+.ntab:hover{color:var(--text);}
+.ntab.active{color:var(--accent);border-bottom:2px solid var(--accent);background:rgba(255,159,28,.06);}
+
+main{padding:18px;max-width:1060px;margin:0 auto;}
+.page{display:none;}.page.active{display:block;}
+
+/* KPI */
+.kgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:11px;margin-bottom:20px;}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:11px;padding:14px;position:relative;overflow:hidden;}
+.kpi::after{content:'';position:absolute;bottom:0;right:0;width:44px;height:44px;border-radius:44px 0 11px 0;opacity:.1;}
+.kpi.or::after{background:var(--accent);}.kpi.gr::after{background:var(--green);}
+.kpi.re::after{background:var(--red);}.kpi.bl::after{background:var(--blue);}
+.kpi .ki{font-size:20px;margin-bottom:5px;}
+.kpi .kv{font-size:17px;font-weight:800;margin-bottom:1px;}
+.kpi.or .kv{color:var(--accent);}.kpi.gr .kv{color:var(--green);}
+.kpi.re .kv{color:var(--red);}.kpi.bl .kv{color:var(--blue);}
+.kpi .kl{font-size:10px;color:var(--muted);}
+
+/* SEC */
+.sec{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:18px;}
+.sec h2{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:14px;}
+.frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:10px;margin-bottom:11px;}
+.fg{display:flex;flex-direction:column;gap:4px;}
+label{font-size:10px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px;}
+input,select,textarea{background:rgba(0,0,0,.5);border:1px solid var(--border);border-radius:7px;
+  padding:8px 10px;color:var(--text);font-family:'Tajawal',sans-serif;font-size:13px;
+  transition:border-color .2s;width:100%;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 2px rgba(255,159,28,.1);}
+select option{background:var(--panel);}
+textarea{resize:vertical;min-height:52px;}
+
+.btn{padding:9px 17px;border:none;border-radius:8px;font-family:'Tajawal',sans-serif;
+  font-size:13px;font-weight:700;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;gap:5px;}
+.btn-or{background:linear-gradient(135deg,var(--accent2),var(--accent));color:#000;}
+.btn-or:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(255,159,28,.3);}
+.btn-gr{background:linear-gradient(135deg,#166534,var(--green));color:#fff;}
+.btn-bl{background:linear-gradient(135deg,#1d4ed8,var(--blue));color:#fff;}
+.btn-re{background:rgba(239,68,68,.15);color:var(--red);border:1px solid rgba(239,68,68,.25);font-size:11px;padding:4px 9px;}
+.btn-re:hover{background:rgba(239,68,68,.28);}
+.btn-sm{padding:5px 10px;font-size:11px;border-radius:6px;}
+.btn-ghost{background:var(--panel);border:1px solid var(--border);color:var(--text);}
+.bgrp{display:flex;gap:7px;flex-wrap:wrap;}
+
+/* TABLE */
+.tw{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:18px;}
+.th{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:6px;}
+.th h2{font-size:12px;font-weight:700;color:var(--accent);}
+table{width:100%;border-collapse:collapse;}
+thead th{padding:9px 12px;text-align:right;font-size:10px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;background:rgba(0,0,0,.35);border-bottom:1px solid var(--border);}
+tbody tr{border-bottom:1px solid rgba(255,159,28,.04);transition:background .15s;}
+tbody tr:hover{background:rgba(255,159,28,.04);}
+tbody td{padding:9px 12px;font-size:12px;vertical-align:middle;}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:18px;font-size:10px;font-weight:700;}
+.bor{background:rgba(255,159,28,.15);color:var(--accent);}
+.bgr{background:rgba(34,197,94,.15);color:var(--green);}
+.bre{background:rgba(239,68,68,.15);color:var(--red);}
+.bbl{background:rgba(59,158,255,.15);color:var(--blue);}
+.bpu{background:rgba(167,139,250,.15);color:var(--purple);}
+
+.amc{font-weight:700;color:var(--green);}
+.dec{font-weight:700;color:var(--red);}
+.div{height:1px;background:var(--border);margin:14px 0;}
+
+/* PROJECT CARDS */
+.pgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:13px;margin-bottom:18px;}
+.pcard{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all .2s;}
+.pcard:hover{border-color:rgba(255,159,28,.4);transform:translateY(-2px);}
+.pch{padding:13px 15px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:flex-start;}
+.pch .pname{font-size:14px;font-weight:700;margin-bottom:2px;}
+.pch .pdate{font-size:10px;color:var(--muted);}
+.pcb{padding:11px 15px;display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+.pcs{font-size:11px;color:var(--muted);}
+.pcs span{font-weight:700;color:var(--text);}
+.pcf{padding:9px 15px;border-top:1px solid var(--border);display:flex;gap:6px;justify-content:flex-end;}
+
+/* MODAL */
+.movl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:200;align-items:center;justify-content:center;}
+.movl.open{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--border);border-radius:15px;padding:22px;
+  max-width:640px;width:94%;max-height:88vh;overflow-y:auto;}
+.modal h2{font-size:14px;font-weight:800;color:var(--accent);margin-bottom:4px;}
+.msub{font-size:11px;color:var(--muted);margin-bottom:16px;}
+.mact{display:flex;gap:7px;margin-top:16px;justify-content:center;flex-wrap:wrap;}
+
+/* LOADING */
+.lovl{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:300;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.lovl.show{display:flex;}
+.spin{width:38px;height:38px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:sp .8s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.lovl p{font-size:13px;color:var(--accent);font-weight:600;}
+
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--panel);border:1px solid var(--accent);border-radius:9px;padding:9px 18px;
+  font-size:13px;font-weight:600;color:var(--accent);z-index:999;transition:transform .3s;white-space:nowrap;}
+.toast.show{transform:translateX(-50%) translateY(0);}
+.empty{text-align:center;padding:34px;color:var(--muted);}
+.empty .ei{font-size:34px;margin-bottom:7px;}
+.empty p{font-size:12px;}
+
+/* WORKER CARD */
+.wcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:18px;}
+.wcard{background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.wch{padding:12px 15px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.wch .wname{font-size:14px;font-weight:700;}
+.wbody{padding:11px 15px;}
+.wprogress{background:rgba(0,0,0,.4);border-radius:6px;height:7px;margin:8px 0;}
+.wprogress-fill{height:7px;border-radius:6px;background:linear-gradient(90deg,var(--accent2),var(--accent));transition:width .4s;}
+.wstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-bottom:10px;}
+.wstat{font-size:10px;color:var(--muted);text-align:center;}
+.wstat strong{display:block;font-size:12px;font-weight:700;color:var(--text);}
+.wpayments{margin-top:8px;}
+.wpay-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;
+  border-bottom:1px solid rgba(255,159,28,.06);font-size:11px;}
+.wpay-item:last-child{border-bottom:none;}
+
+@media(max-width:600px){main{padding:11px;}.frow{grid-template-columns:1fr 1fr;}.kgrid{grid-template-columns:1fr 1fr;}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-ico">🔧</div>
+    <div>
+      <h1>مسيّر مشاريع التلحيم</h1>
+      <p>شركة عماري — إدارة المشاريع والعمال والمصاريف</p>
+    </div>
+  </div>
+  <div style="font-size:11px;color:var(--muted);text-align:left;">
+    <strong style="display:block;font-size:13px;color:var(--accent);" id="todayLbl">—</strong>
+    <span id="hCount">جاري التحميل...</span>
+  </div>
+</header>
+
+<div class="sbar">
+  <div class="sst"><div class="sdot ld" id="sdot"></div><span id="stxt">جاري الاتصال...</span></div>
+  <div class="sbtns">
+    <button class="sbtn" onclick="loadFromSheets()">🔄 تحديث</button>
+    <button class="sbtn go" onclick="saveToSheets()">☁️ حفظ</button>
+  </div>
+</div>
+
+<nav class="ntabs">
+  <button class="ntab active" onclick="showPage('projects',this)">📁 المشاريع</button>
+  <button class="ntab" onclick="showPage('workers',this)">👷 العمال</button>
+  <button class="ntab" onclick="showPage('purchases',this)">🛒 المشتريات</button>
+  <button class="ntab" onclick="showPage('received',this)">💰 المبالغ المستلمة</button>
+  <button class="ntab" onclick="showPage('backup',this)">💾 نسخ احتياطي</button>
+</nav>
+
+<main>
+
+<!-- ===== PROJECTS ===== -->
+<div id="page-projects" class="page active">
+  <div class="kgrid" id="projKpis"></div>
+  <div class="sec">
+    <h2>➕ مشروع جديد</h2>
+    <div class="frow">
+      <div class="fg"><label>اسم المشروع</label><input type="text" id="pjName" placeholder="مثال: بوابات المستودع الجنوبي"></div>
+      <div class="fg"><label>تاريخ البداية</label><input type="date" id="pjStart"></div>
+      <div class="fg"><label>القيمة الإجمالية للعقد (دج)</label><input type="number" id="pjValue" placeholder="0"></div>
+    </div>
+    <div class="frow">
+      <div class="fg" style="grid-column:1/-1"><label>ملاحظات</label><textarea id="pjNotes" placeholder="وصف المشروع أو أي ملاحظة..."></textarea></div>
+    </div>
+    <button class="btn btn-or" onclick="addProject()">✅ إضافة المشروع</button>
+  </div>
+  <div class="pgrid" id="projGrid"></div>
+</div>
+
+<!-- ===== WORKERS ===== -->
+<div id="page-workers" class="page">
+  <div class="sec">
+    <h2>👷 إضافة عامل لمشروع</h2>
+    <div class="frow">
+      <div class="fg"><label>المشروع</label>
+        <select id="wkProj"><option value="">— اختر المشروع —</option></select></div>
+      <div class="fg"><label>اسم العامل</label><input type="text" id="wkName" placeholder="اسم العامل"></div>
+      <div class="fg"><label>الأجر المتفق عليه (دج)</label>
+        <input type="number" id="wkAgreed" placeholder="المبلغ الإجمالي المتفق عليه" style="border-color:var(--gold);font-weight:700;"></div>
+      <div class="fg"><label>ملاحظات</label><input type="text" id="wkNotes" placeholder="نوع العمل أو أي ملاحظة..."></div>
+    </div>
+    <button class="btn btn-or" onclick="addWorker()">✅ إضافة العامل</button>
+  </div>
+
+  <!-- دفعة مصروف -->
+  <div class="sec">
+    <h2>💸 تسجيل دفعة مصروف لعامل</h2>
+    <div class="frow">
+      <div class="fg"><label>المشروع</label>
+        <select id="pyProj" onchange="fillPayWorkers()"><option value="">— اختر المشروع —</option></select></div>
+      <div class="fg"><label>العامل</label>
+        <select id="pyWorker"><option value="">— اختر العامل —</option></select></div>
+      <div class="fg"><label>التاريخ</label><input type="date" id="pyDate"></div>
+      <div class="fg"><label>المبلغ (دج)</label>
+        <input type="number" id="pyAmount" placeholder="0" style="border-color:var(--gold);font-weight:700;"></div>
+    </div>
+    <div class="frow">
+      <div class="fg" style="grid-column:1/-1"><label>ملاحظة</label>
+        <input type="text" id="pyNote" placeholder="سبب الدفعة أو ملاحظة..."></div>
+    </div>
+    <button class="btn btn-or" onclick="addPayment()">✅ تسجيل الدفعة</button>
+  </div>
+
+  <div class="wcards" id="workerCards"></div>
+</div>
+
+<!-- ===== PURCHASES ===== -->
+<div id="page-purchases" class="page">
+  <!-- مشتريات صغيرة -->
+  <div class="sec">
+    <h2>🛒 مشتريات صغيرة (بدون فاتورة)</h2>
+    <div class="frow">
+      <div class="fg"><label>المشروع</label>
+        <select id="spProj"><option value="">— اختر —</option></select></div>
+      <div class="fg"><label>التاريخ</label><input type="date" id="spDate"></div>
+      <div class="fg"><label>المبلغ (دج)</label>
+        <input type="number" id="spAmount" placeholder="0" style="border-color:var(--gold);"></div>
+    </div>
+    <div class="frow">
+      <div class="fg" style="grid-column:1/-1"><label>الوصف</label>
+        <textarea id="spDesc" placeholder="مثال: أقطاب لحام، أسلاك، نقل..."></textarea></div>
+    </div>
+    <button class="btn btn-or" onclick="addSmallPurchase()">✅ إضافة</button>
+  </div>
+
+  <!-- مشتريات بفاتورة -->
+  <div class="sec">
+    <h2>🧾 مشتريات بفاتورة</h2>
+    <div class="frow">
+      <div class="fg"><label>المشروع</label>
+        <select id="ipProj"><option value="">— اختر —</option></select></div>
+      <div class="fg"><label>رقم الفاتورة</label>
+        <input type="text" id="ipNum" placeholder="FA-2024-001"></div>
+      <div class="fg"><label>التاريخ</label><input type="date" id="ipDate"></div>
+      <div class="fg"><label>المبلغ (دج)</label>
+        <input type="number" id="ipAmount" placeholder="0" style="border-color:var(--gold);font-weight:700;"></div>
+    </div>
+    <div class="frow">
+      <div class="fg" style="grid-column:1/-1"><label>الوصف</label>
+        <textarea id="ipDesc" placeholder="مثال: حديد مربع 40×40، صفائح 3م..."></textarea></div>
+    </div>
+    <button class="btn btn-or" onclick="addInvoicePurchase()">✅ إضافة</button>
+  </div>
+
+  <!-- جدول المشتريات -->
+  <div class="tw">
+    <div class="th">
+      <h2>📋 جميع المشتريات</h2>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <select id="purFilterProj" onchange="renderPurchases()" style="width:auto;font-size:11px;padding:4px 8px;">
+          <option value="">كل المشاريع</option>
+        </select>
+        <select id="purFilterType" onchange="renderPurchases()" style="width:auto;font-size:11px;padding:4px 8px;">
+          <option value="">الكل</option>
+          <option value="صغيرة">صغيرة</option>
+          <option value="فاتورة">بفاتورة</option>
+        </select>
+      </div>
+    </div>
+    <div id="purchasesContainer"></div>
+  </div>
+</div>
+
+<!-- ===== RECEIVED ===== -->
+<div id="page-received" class="page">
+  <div class="kgrid" id="recKpis"></div>
+  <div class="sec">
+    <h2>💰 تسجيل مبلغ مستلم من الشركة</h2>
+    <div class="frow">
+      <div class="fg"><label>المشروع</label>
+        <select id="rcProj"><option value="">— اختر —</option></select></div>
+      <div class="fg"><label>التاريخ</label><input type="date" id="rcDate"></div>
+      <div class="fg"><label>المبلغ المستلم (دج)</label>
+        <input type="number" id="rcAmount" placeholder="0" style="border-color:var(--green);font-weight:700;"></div>
+    </div>
+    <div class="frow">
+      <div class="fg" style="grid-column:1/-1"><label>ملاحظة</label>
+        <input type="text" id="rcNote" placeholder="دفعة أولى، تسبيق، استحقاق..."></div>
+    </div>
+    <button class="btn btn-gr" onclick="addReceived()">✅ تسجيل</button>
+  </div>
+
+  <div class="tw">
+    <div class="th">
+      <h2>💰 المبالغ المستلمة</h2>
+      <select id="rcFilterProj" onchange="renderReceived()" style="width:auto;font-size:11px;padding:4px 8px;">
+        <option value="">كل المشاريع</option>
+      </select>
+    </div>
+    <div id="receivedContainer"></div>
+  </div>
+
+  <!-- ملخص مالي لكل مشروع -->
+  <h2 style="font-size:13px;font-weight:700;color:var(--accent);margin-bottom:12px;">📊 الملخص المالي لكل مشروع</h2>
+  <div id="financialSummary"></div>
+</div>
+
+<!-- ===== BACKUP ===== -->
+<div id="page-backup" class="page">
+  <div class="sec" style="text-align:center;">
+    <div style="font-size:38px;margin-bottom:9px;">☁️</div>
+    <h2>المزامنة مع Google Sheets</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">بياناتك تُحفظ تلقائياً بعد كل عملية</p>
+    <div class="bgrp" style="justify-content:center;">
+      <button class="btn btn-gr" onclick="saveToSheets()">☁️ حفظ الآن</button>
+      <button class="btn btn-bl" onclick="loadFromSheets()">🔄 تحميل</button>
+    </div>
+    <p style="font-size:10px;color:var(--muted);margin-top:11px;">آخر مزامنة: <span id="lastSync">—</span></p>
+  </div>
+  <div class="sec" style="text-align:center;">
+    <div style="font-size:38px;margin-bottom:9px;">💾</div>
+    <h2>نسخة احتياطية محلية</h2>
+    <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">احفظ ملف JSON على جهازك</p>
+    <button class="btn btn-or" onclick="exportJSON()">💾 تحميل JSON</button>
+  </div>
+  <div class="sec" style="text-align:center;">
+    <div style="font-size:38px;margin-bottom:9px;">📂</div>
+    <h2>استيراد بيانات</h2>
+    <label style="border:2px dashed var(--border);border-radius:9px;padding:18px;display:block;cursor:pointer;font-size:12px;color:var(--muted);">
+      <input type="file" accept=".json" onchange="importJSON(event)" style="display:none;">
+      📁 انقر لاختيار ملف JSON
+    </label>
+  </div>
+  <div class="sec" style="text-align:center;padding:14px;">
+    <h2 style="color:var(--red);margin-bottom:7px;">⚠️ حذف البيانات</h2>
+    <button class="btn btn-re" onclick="resetAll()">🗑 حذف كل البيانات المحلية</button>
+  </div>
+</div>
+
+</main>
+
+<!-- PROJECT DETAIL MODAL -->
+<div class="movl" id="projModal">
+  <div class="modal">
+    <h2 id="pmTitle">—</h2>
+    <p class="msub" id="pmSub">—</p>
+    <div id="pmBody"></div>
+    <div class="mact">
+      <button class="btn btn-ghost btn-sm" onclick="closePM()">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT PROJECT MODAL -->
+<div class="movl" id="editProjModal">
+  <div class="modal">
+    <h2>✏️ تعديل المشروع</h2>
+    <p class="msub" id="editProjSub"></p>
+    <input type="hidden" id="editProjId">
+    <div class="frow" style="margin-bottom:12px;">
+      <div class="fg"><label>اسم المشروع</label><input type="text" id="editProjName"></div>
+      <div class="fg"><label>تاريخ البداية</label><input type="date" id="editProjStart"></div>
+    </div>
+    <div class="frow" style="margin-bottom:12px;">
+      <div class="fg"><label>قيمة العقد (دج)</label>
+        <input type="number" id="editProjValue" placeholder="0" style="border-color:var(--gold);font-weight:700;"></div>
+      <div class="fg"><label>الحالة</label>
+        <select id="editProjStatus">
+          <option value="جاري">🔄 جاري</option>
+          <option value="منجز">✅ منجز</option>
+          <option value="موقوف">⏸ موقوف</option>
+        </select></div>
+    </div>
+    <div class="fg" style="margin-bottom:16px;"><label>ملاحظات</label>
+      <textarea id="editProjNotes" placeholder="ملاحظات المشروع..."></textarea></div>
+    <div class="mact">
+      <button class="btn btn-or" onclick="saveEditProject()">💾 حفظ التعديل</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeEditProj()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<div class="lovl" id="lovl"><div class="spin"></div><p id="lovlTxt">جاري المزامنة...</p></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const SHEET_URL="https://script.google.com/macros/s/AKfycbzhcQZVZxwEUNrkUXURRkXxbDWTdCJMlSL2fm1sF5amSfYzs1KPKxbmw-l3JT6TvHKTGQ/exec";
+
+let projects  = JSON.parse(localStorage.getItem('wld_projects')  || '[]');
+let workers   = JSON.parse(localStorage.getItem('wld_workers')   || '[]');
+let payments  = JSON.parse(localStorage.getItem('wld_payments')  || '[]'); // دفعات للعمال
+let spurchases= JSON.parse(localStorage.getItem('wld_spurchases')|| '[]'); // مشتريات صغيرة
+let ipurchases= JSON.parse(localStorage.getItem('wld_ipurchases')|| '[]'); // مشتريات بفاتورة
+let received  = JSON.parse(localStorage.getItem('wld_received')  || '[]'); // مستلم من الشركة
+let autoSaveTimer=null;
+
+window.addEventListener('DOMContentLoaded',()=>{
+  const t=new Date();
+  document.getElementById('todayLbl').textContent=fd(ds(t));
+  ['pjStart','pyDate','spDate','ipDate','rcDate'].forEach(id=>document.getElementById(id).value=ds(t));
+  renderAll();
+  loadFromSheets();
+});
+
+function ds(d){return`${d.getFullYear()}-${p2(d.getMonth()+1)}-${p2(d.getDate())}`;}
+function p2(n){return String(n).padStart(2,'0');}
+function fd(s){if(!s)return'—';const[y,m,d]=s.split('-');const M=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];return`${d}/${M[+m-1]}/${y}`;}
+function fn(n){return Number(n||0).toLocaleString('ar-DZ');}
+function uid(){return Date.now()+Math.floor(Math.random()*999);}
+
+/* SYNC */
+function setSS(s,t){document.getElementById('sdot').className='sdot '+s;document.getElementById('stxt').textContent=t;}
+
+async function loadFromSheets(){
+  setSS('ld','جاري التحميل...');
+  try{
+    const res=await fetch(SHEET_URL+'?app=weld2');
+    const data=await res.json();
+    if(data.status==='ok'){
+      if(data.projects  &&data.projects.length)   projects  =data.projects;
+      if(data.workers   &&data.workers.length)     workers   =data.workers;
+      if(data.payments  &&data.payments.length)    payments  =data.payments;
+      if(data.spurchases&&data.spurchases.length)  spurchases=data.spurchases;
+      if(data.ipurchases&&data.ipurchases.length)  ipurchases=data.ipurchases;
+      if(data.received  &&data.received.length)    received  =data.received;
+      saveLocal();renderAll();
+      setSS('ok',`تم التحميل ✓ — ${new Date().toLocaleTimeString('ar-DZ')}`);
+      document.getElementById('lastSync').textContent=new Date().toLocaleTimeString('ar-DZ');
+      showToast('✅ تم التحميل من Google Sheets');
+    }else{setSS('err','خطأ');showToast('⚠️ تعذّر التحميل');}
+  }catch(e){setSS('err','لا اتصال — تعمل محلياً');showToast('📴 لا اتصال — تعمل محلياً');}
+}
+
+async function saveToSheets(){
+  setSS('ld','جاري الحفظ...');
+  showLoading('جاري الحفظ في Google Sheets...');
+  try{
+    const res=await fetch(SHEET_URL,{method:'POST',body:JSON.stringify({action:'saveWeld2',projects,workers,payments,spurchases,ipurchases,received})});
+    const data=await res.json();
+    hideLoading();
+    if(data.status==='ok'){
+      setSS('ok',`تم الحفظ ✓ — ${new Date().toLocaleTimeString('ar-DZ')}`);
+      document.getElementById('lastSync').textContent=new Date().toLocaleTimeString('ar-DZ');
+      showToast('☁️ تم الحفظ في Google Sheets');
+    }else{setSS('err','خطأ');showToast('❌ خطأ في الحفظ');}
+  }catch(e){hideLoading();setSS('err','فشل الاتصال');showToast('❌ تعذّر الاتصال');}
+}
+
+function scheduleAutoSave(){if(autoSaveTimer)clearTimeout(autoSaveTimer);autoSaveTimer=setTimeout(saveToSheets,3000);}
+function saveLocal(){
+  localStorage.setItem('wld_projects',  JSON.stringify(projects));
+  localStorage.setItem('wld_workers',   JSON.stringify(workers));
+  localStorage.setItem('wld_payments',  JSON.stringify(payments));
+  localStorage.setItem('wld_spurchases',JSON.stringify(spurchases));
+  localStorage.setItem('wld_ipurchases',JSON.stringify(ipurchases));
+  localStorage.setItem('wld_received',  JSON.stringify(received));
+  document.getElementById('hCount').textContent=`${projects.length} مشروع`;
+}
+function saveAndSync(){saveLocal();scheduleAutoSave();}
+function renderAll(){renderProjKpis();renderProjGrid();fillSelects();renderWorkerCards();renderPurchases();renderReceived();renderFinancialSummary();renderRecKpis();}
+
+/* PROJECTS */
+function addProject(){
+  const name=document.getElementById('pjName').value.trim(),
+        start=document.getElementById('pjStart').value,
+        value=parseFloat(document.getElementById('pjValue').value)||0,
+        notes=document.getElementById('pjNotes').value.trim();
+  if(!name){showToast('❌ أدخل اسم المشروع');return;}
+  projects.push({id:uid(),name,start,value,notes,status:'جاري'});
+  saveAndSync();
+  ['pjName','pjNotes'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('pjValue').value='';
+  renderAll();showToast('✅ تم إضافة المشروع');
+}
+
+function renderProjKpis(){
+  const tot=projects.length,act=projects.filter(p=>p.status==='جاري').length,
+        done=projects.filter(p=>p.status==='منجز').length;
+  const totRec=received.reduce((s,r)=>s+(r.amount||0),0);
+  document.getElementById('projKpis').innerHTML=`
+    <div class="kpi or"><div class="ki">📁</div><div class="kv">${tot}</div><div class="kl">إجمالي المشاريع</div></div>
+    <div class="kpi bl"><div class="ki">🔄</div><div class="kv">${act}</div><div class="kl">جارية</div></div>
+    <div class="kpi gr"><div class="ki">✅</div><div class="kv">${done}</div><div class="kl">منجزة</div></div>
+    <div class="kpi gr"><div class="ki">💰</div><div class="kv">${fn(totRec)} دج</div><div class="kl">إجمالي المستلم</div></div>`;
+}
+
+function renderProjGrid(){
+  const c=document.getElementById('projGrid');
+  if(!projects.length){c.innerHTML='<div class="empty"><div class="ei">📁</div><p>لا توجد مشاريع</p></div>';return;}
+  c.innerHTML=projects.map(p=>{
+    const pw=workers.filter(w=>w.projectId==p.id);
+    const totalAgreed=pw.reduce((s,w)=>s+(w.agreed||0),0);
+    const totalPaid=payments.filter(py=>py.projectId==p.id).reduce((s,py)=>s+(py.amount||0),0);
+    const totalSP=spurchases.filter(s=>s.projectId==p.id).reduce((s,sp)=>s+(sp.amount||0),0);
+    const totalIP=ipurchases.filter(i=>i.projectId==p.id).reduce((s,ip)=>s+(ip.amount||0),0);
+    const totalRec=received.filter(r=>r.projectId==p.id).reduce((s,r)=>s+(r.amount||0),0);
+    const totalCost=totalPaid+totalSP+totalIP;
+    const balance=totalRec-totalCost;
+    return`<div class="pcard">
+      <div class="pch">
+        <div><div class="pname">${p.name}</div><div class="pdate">📅 ${fd(p.start)}</div></div>
+        <span class="badge ${p.status==='منجز'?'bgr':p.status==='موقوف'?'bre':'bbl'}">${p.status}</span>
+      </div>
+      <div class="pcb">
+        <div class="pcs">👷 عمال: <span>${pw.length}</span></div>
+        <div class="pcs">💰 مستلم: <span style="color:var(--green)">${fn(totalRec)} دج</span></div>
+        <div class="pcs">💸 مدفوع: <span style="color:var(--red)">${fn(totalCost)} دج</span></div>
+        <div class="pcs">📈 رصيد: <span style="color:${balance>=0?'var(--green)':'var(--red)'}">${fn(balance)} دج</span></div>
+        <div class="pcs">🤝 أجور متفق: <span>${fn(totalAgreed)} دج</span></div>
+        <div class="pcs">✅ مدفوع للعمال: <span>${fn(totalPaid)} دج</span></div>
+      </div>
+      <div class="pcf">
+        <button class="btn btn-sm btn-ghost" onclick="openPM('${p.id}')">🔍 تفاصيل</button>
+        <button class="btn btn-sm btn-ghost" onclick="openEditProj('${p.id}')">✏️ تعديل</button>
+        <button class="btn btn-re btn-sm" onclick="deleteProject('${p.id}')">حذف</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openEditProj(id){
+  const p=projects.find(p=>p.id==id);if(!p)return;
+  document.getElementById('editProjId').value=id;
+  document.getElementById('editProjName').value=p.name;
+  document.getElementById('editProjStart').value=p.start||'';
+  document.getElementById('editProjValue').value=p.value||'';
+  document.getElementById('editProjStatus').value=p.status||'جاري';
+  document.getElementById('editProjNotes').value=p.notes||'';
+  document.getElementById('editProjSub').textContent=`بداية: ${fd(p.start)}`;
+  document.getElementById('editProjModal').classList.add('open');
+}
+function saveEditProject(){
+  const id=document.getElementById('editProjId').value;
+  const p=projects.find(p=>p.id==id);if(!p)return;
+  const name=document.getElementById('editProjName').value.trim();
+  if(!name){showToast('❌ أدخل اسم المشروع');return;}
+  p.name=name;
+  p.start=document.getElementById('editProjStart').value;
+  p.value=parseFloat(document.getElementById('editProjValue').value)||0;
+  p.status=document.getElementById('editProjStatus').value;
+  p.notes=document.getElementById('editProjNotes').value.trim();
+  saveAndSync();closeEditProj();renderAll();
+  showToast('✅ تم تعديل المشروع');
+}
+function closeEditProj(){document.getElementById('editProjModal').classList.remove('open');}
+
+function toggleStatus(id){
+  const p=projects.find(p=>p.id==id);if(!p)return;
+  const s=['جاري','منجز','موقوف'];p.status=s[(s.indexOf(p.status)+1)%3];
+  saveAndSync();renderAll();showToast(`✅ ${p.name} → ${p.status}`);
+}
+
+function deleteProject(id){
+  if(!confirm('حذف المشروع وكل بياناته؟'))return;
+  projects=projects.filter(p=>p.id!=id);
+  workers=workers.filter(w=>w.projectId!=id);
+  payments=payments.filter(p=>p.projectId!=id);
+  spurchases=spurchases.filter(s=>s.projectId!=id);
+  ipurchases=ipurchases.filter(i=>i.projectId!=id);
+  received=received.filter(r=>r.projectId!=id);
+  saveAndSync();renderAll();showToast('🗑 تم الحذف');
+}
+
+function openPM(id){
+  const p=projects.find(p=>p.id==id);if(!p)return;
+  const pw=workers.filter(w=>w.projectId==id);
+  const totalAgreed=pw.reduce((s,w)=>s+(w.agreed||0),0);
+  const totalPaid=payments.filter(py=>py.projectId==id).reduce((s,py)=>s+(py.amount||0),0);
+  const totalSP=spurchases.filter(s=>s.projectId==id).reduce((s,sp)=>s+(sp.amount||0),0);
+  const totalIP=ipurchases.filter(i=>i.projectId==id).reduce((s,ip)=>s+(ip.amount||0),0);
+  const totalRec=received.filter(r=>r.projectId==id).reduce((s,r)=>s+(r.amount||0),0);
+  const totalCost=totalPaid+totalSP+totalIP;
+  const balance=totalRec-totalCost;
+  document.getElementById('pmTitle').textContent=p.name;
+  document.getElementById('pmSub').textContent=`بداية: ${fd(p.start)} — الحالة: ${p.status}`;
+  document.getElementById('pmBody').innerHTML=`
+    <div class="kgrid" style="margin-bottom:14px;">
+      <div class="kpi gr"><div class="ki">💰</div><div class="kv">${fn(totalRec)} دج</div><div class="kl">مستلم من الشركة</div></div>
+      <div class="kpi re"><div class="ki">💸</div><div class="kv">${fn(totalCost)} دج</div><div class="kl">إجمالي المصاريف</div></div>
+      <div class="kpi ${balance>=0?'gr':'re'}"><div class="ki">📊</div><div class="kv">${fn(balance)} دج</div><div class="kl">الرصيد</div></div>
+    </div>
+    <div class="div"></div>
+    <p style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:8px;">👷 العمال — متفق: ${fn(totalAgreed)} دج | مدفوع: ${fn(totalPaid)} دج</p>
+    ${pw.map(w=>{
+      const wp=payments.filter(py=>py.workerId==w.id).reduce((s,py)=>s+(py.amount||0),0);
+      const pct=w.agreed>0?Math.min(100,Math.round(wp/w.agreed*100)):0;
+      return`<div style="background:rgba(0,0,0,.3);border-radius:8px;padding:10px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+          <strong>${w.name}</strong>
+          <span>${fn(wp)} / ${fn(w.agreed)} دج</span>
+        </div>
+        <div class="wprogress"><div class="wprogress-fill" style="width:${pct}%"></div></div>
+        <span style="font-size:10px;color:var(--muted);">${pct}% مدفوع — متبقي: ${fn((w.agreed||0)-wp)} دج</span>
+      </div>`;
+    }).join('')||'<p style="font-size:11px;color:var(--muted);">لا يوجد عمال</p>'}
+    <div class="div"></div>
+    <p style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:8px;">🛒 مشتريات صغيرة: ${fn(totalSP)} دج</p>
+    <p style="font-size:11px;font-weight:700;color:var(--accent);margin-bottom:4px;">🧾 مشتريات بفاتورة: ${fn(totalIP)} دج</p>
+    ${p.notes?`<div class="div"><p style="font-size:11px;color:var(--muted);">📝 ${p.notes}</p></div>`:''}`;
+  document.getElementById('projModal').classList.add('open');
+}
+function closePM(){document.getElementById('projModal').classList.remove('open');}
+
+/* FILL SELECTS */
+function fillSelects(){
+  const opts=projects.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  ['wkProj','pyProj','spProj','ipProj','rcProj'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const v=el.value;
+    el.innerHTML=`<option value="">— اختر المشروع —</option>`+opts;
+    if(v)el.value=v;
+  });
+  ['purFilterProj','rcFilterProj'].forEach(id=>{
+    const el=document.getElementById(id);if(!el)return;
+    const v=el.value;
+    el.innerHTML=`<option value="">كل المشاريع</option>`+opts;
+    if(v)el.value=v;
+  });
+}
+
+/* WORKERS */
+function addWorker(){
+  const proj=document.getElementById('wkProj').value,
+        name=document.getElementById('wkName').value.trim(),
+        agreed=parseFloat(document.getElementById('wkAgreed').value)||0,
+        notes=document.getElementById('wkNotes').value.trim();
+  if(!proj){showToast('❌ اختر المشروع');return;}
+  if(!name){showToast('❌ أدخل اسم العامل');return;}
+  workers.push({id:uid(),projectId:proj,name,agreed,notes});
+  saveAndSync();
+  ['wkName','wkNotes'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('wkAgreed').value='';
+  renderWorkerCards();renderProjGrid();fillPayWorkers();
+  showToast('✅ تم إضافة العامل');
+}
+
+function fillPayWorkers(){
+  const proj=document.getElementById('pyProj').value;
+  const pw=workers.filter(w=>w.projectId==proj);
+  document.getElementById('pyWorker').innerHTML=
+    `<option value="">— اختر العامل —</option>`+
+    pw.map(w=>`<option value="${w.id}">${w.name}</option>`).join('');
+}
+document.getElementById('pyProj').addEventListener('change',fillPayWorkers);
+
+function addPayment(){
+  const proj=document.getElementById('pyProj').value,
+        wid=document.getElementById('pyWorker').value,
+        date=document.getElementById('pyDate').value,
+        amount=parseFloat(document.getElementById('pyAmount').value)||0,
+        note=document.getElementById('pyNote').value.trim();
+  if(!proj){showToast('❌ اختر المشروع');return;}
+  if(!wid){showToast('❌ اختر العامل');return;}
+  if(amount<=0){showToast('❌ أدخل المبلغ');return;}
+  payments.push({id:uid(),projectId:proj,workerId:wid,date,amount,note});
+  saveAndSync();
+  document.getElementById('pyAmount').value='';
+  document.getElementById('pyNote').value='';
+  renderWorkerCards();renderProjGrid();
+  showToast('✅ تم تسجيل الدفعة');
+}
+
+function renderWorkerCards(){
+  const c=document.getElementById('workerCards');
+  if(!workers.length){c.innerHTML='<div class="empty"><div class="ei">👷</div><p>لا يوجد عمال مسجلون</p></div>';return;}
+  c.innerHTML=workers.map(w=>{
+    const wp=payments.filter(p=>p.workerId==w.id);
+    const totalPaid=wp.reduce((s,p)=>s+(p.amount||0),0);
+    const remaining=(w.agreed||0)-totalPaid;
+    const pct=w.agreed>0?Math.min(100,Math.round(totalPaid/w.agreed*100)):0;
+    const proj=projects.find(p=>p.id==w.projectId);
+    return`<div class="wcard">
+      <div class="wch">
+        <div>
+          <div class="wname">${w.name}</div>
+          <div style="font-size:10px;color:var(--muted);">${proj?proj.name:'—'}</div>
+        </div>
+        <span class="badge ${remaining<=0?'bgr':'bor'}">${remaining<=0?'مسدَّد':'معلق'}</span>
+      </div>
+      <div class="wbody">
+        <div class="wstats">
+          <div class="wstat"><strong>${fn(w.agreed)} دج</strong>المتفق عليه</div>
+          <div class="wstat"><strong style="color:var(--green)">${fn(totalPaid)} دج</strong>المدفوع</div>
+          <div class="wstat"><strong style="color:${remaining>0?'var(--red)':'var(--green)'}">${fn(remaining)} دج</strong>المتبقي</div>
+        </div>
+        <div class="wprogress"><div class="wprogress-fill" style="width:${pct}%"></div></div>
+        <div style="font-size:10px;color:var(--muted);margin-bottom:8px;">${pct}% مدفوع</div>
+        ${w.notes?`<div style="font-size:10px;color:var(--muted);margin-bottom:8px;">📝 ${w.notes}</div>`:''}
+        <div class="wpayments">
+          ${wp.length?`<div style="font-size:10px;font-weight:700;color:var(--accent);margin-bottom:5px;">الدفعات:</div>`:''}
+          ${wp.map(p=>`<div class="wpay-item">
+            <span>${fd(p.date)}${p.note?' — '+p.note:''}</span>
+            <span style="color:var(--gold);font-weight:700;">${fn(p.amount)} دج</span>
+          </div>`).join('')}
+        </div>
+        <div style="display:flex;gap:5px;margin-top:8px;justify-content:flex-end;">
+          <button class="btn btn-re btn-sm" onclick="deleteWorker('${w.id}')">حذف العامل</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function deleteWorker(id){
+  if(!confirm('حذف هذا العامل وكل دفعاته؟'))return;
+  workers=workers.filter(w=>w.id!=id);
+  payments=payments.filter(p=>p.workerId!=id);
+  saveAndSync();renderWorkerCards();renderProjGrid();showToast('🗑 تم الحذف');
+}
+
+/* PURCHASES */
+function addSmallPurchase(){
+  const proj=document.getElementById('spProj').value,
+        date=document.getElementById('spDate').value,
+        amount=parseFloat(document.getElementById('spAmount').value)||0,
+        desc=document.getElementById('spDesc').value.trim();
+  if(!proj){showToast('❌ اختر المشروع');return;}
+  if(!desc){showToast('❌ اكتب الوصف');return;}
+  if(amount<=0){showToast('❌ أدخل المبلغ');return;}
+  spurchases.push({id:uid(),projectId:proj,date,amount,desc});
+  saveAndSync();
+  document.getElementById('spDesc').value='';document.getElementById('spAmount').value='';
+  renderPurchases();renderProjGrid();showToast('✅ تمت الإضافة');
+}
+
+function addInvoicePurchase(){
+  const proj=document.getElementById('ipProj').value,
+        num=document.getElementById('ipNum').value.trim(),
+        date=document.getElementById('ipDate').value,
+        amount=parseFloat(document.getElementById('ipAmount').value)||0,
+        desc=document.getElementById('ipDesc').value.trim();
+  if(!proj){showToast('❌ اختر المشروع');return;}
+  if(!num){showToast('❌ أدخل رقم الفاتورة');return;}
+  if(!desc){showToast('❌ اكتب الوصف');return;}
+  if(amount<=0){showToast('❌ أدخل المبلغ');return;}
+  ipurchases.push({id:uid(),projectId:proj,num,date,amount,desc});
+  saveAndSync();
+  ['ipNum','ipDesc'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('ipAmount').value='';
+  renderPurchases();renderProjGrid();showToast('✅ تمت الإضافة');
+}
+
+function renderPurchases(){
+  const fp=document.getElementById('purFilterProj').value,
+        ft=document.getElementById('purFilterType').value;
+  let rows=[];
+  if(!ft||ft==='صغيرة'){
+    spurchases.filter(s=>!fp||s.projectId==fp).forEach(s=>{
+      const p=projects.find(p=>p.id==s.projectId);
+      rows.push({date:s.date,proj:p?p.name:'—',type:'صغيرة',ref:'—',desc:s.desc,amount:s.amount,id:s.id,t:'sp'});
+    });
+  }
+  if(!ft||ft==='فاتورة'){
+    ipurchases.filter(i=>!fp||i.projectId==fp).forEach(i=>{
+      const p=projects.find(p=>p.id==i.projectId);
+      rows.push({date:i.date,proj:p?p.name:'—',type:'فاتورة',ref:i.num,desc:i.desc,amount:i.amount,id:i.id,t:'ip'});
+    });
+  }
+  rows.sort((a,b)=>b.date.localeCompare(a.date));
+  const total=rows.reduce((s,r)=>s+(r.amount||0),0);
+  const c=document.getElementById('purchasesContainer');
+  if(!rows.length){c.innerHTML='<div class="empty"><div class="ei">🛒</div><p>لا توجد مشتريات</p></div>';return;}
+  c.innerHTML=`<div style="padding:8px 15px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);">الإجمالي: <strong style="color:var(--accent)">${fn(total)} دج</strong></div>
+  <table><thead><tr><th>التاريخ</th><th>المشروع</th><th>النوع</th><th>رقم الفاتورة</th><th>الوصف</th><th>المبلغ</th><th></th></tr></thead>
+  <tbody>${rows.map(r=>`<tr>
+    <td style="font-size:10px;color:var(--muted);">${fd(r.date)}</td>
+    <td style="font-size:11px;color:var(--accent);">${r.proj}</td>
+    <td><span class="badge ${r.type==='فاتورة'?'bpu':'bbl'}">${r.type}</span></td>
+    <td style="font-size:11px;">${r.ref}</td>
+    <td>${r.desc}</td>
+    <td style="color:var(--gold);font-weight:700;">${fn(r.amount)} دج</td>
+    <td><button class="btn btn-re btn-sm" onclick="deletePurchase('${r.id}','${r.t}')">حذف</button></td>
+  </tr>`).join('')}</tbody></table>`;
+}
+
+function deletePurchase(id,type){
+  if(!confirm('حذف هذا السجل؟'))return;
+  if(type==='sp')spurchases=spurchases.filter(s=>s.id!=id);
+  else ipurchases=ipurchases.filter(i=>i.id!=id);
+  saveAndSync();renderPurchases();renderProjGrid();showToast('🗑 تم الحذف');
+}
+
+/* RECEIVED */
+function addReceived(){
+  const proj=document.getElementById('rcProj').value,
+        date=document.getElementById('rcDate').value,
+        amount=parseFloat(document.getElementById('rcAmount').value)||0,
+        note=document.getElementById('rcNote').value.trim();
+  if(!proj){showToast('❌ اختر المشروع');return;}
+  if(amount<=0){showToast('❌ أدخل المبلغ');return;}
+  received.push({id:uid(),projectId:proj,date,amount,note});
+  saveAndSync();
+  document.getElementById('rcAmount').value='';document.getElementById('rcNote').value='';
+  renderReceived();renderRecKpis();renderFinancialSummary();renderProjGrid();
+  showToast('✅ تم التسجيل');
+}
+
+function renderRecKpis(){
+  const tot=received.reduce((s,r)=>s+(r.amount||0),0);
+  const totW=payments.reduce((s,p)=>s+(p.amount||0),0);
+  const totSP=spurchases.reduce((s,s2)=>s+(s2.amount||0),0);
+  const totIP=ipurchases.reduce((s,i)=>s+(i.amount||0),0);
+  const totCost=totW+totSP+totIP;
+  const bal=tot-totCost;
+  document.getElementById('recKpis').innerHTML=`
+    <div class="kpi gr"><div class="ki">💰</div><div class="kv">${fn(tot)} دج</div><div class="kl">إجمالي المستلم</div></div>
+    <div class="kpi re"><div class="ki">💸</div><div class="kv">${fn(totCost)} دج</div><div class="kl">إجمالي المصاريف</div></div>
+    <div class="kpi ${bal>=0?'gr':'re'}"><div class="ki">📊</div><div class="kv">${fn(bal)} دج</div><div class="kl">الرصيد الإجمالي</div></div>
+    <div class="kpi bl"><div class="ki">📋</div><div class="kv">${received.length}</div><div class="kl">دفعة مستلمة</div></div>`;
+}
+
+function renderReceived(){
+  const fp=document.getElementById('rcFilterProj').value;
+  let f=received;
+  if(fp)f=f.filter(r=>r.projectId==fp);
+  f=[...f].sort((a,b)=>b.date.localeCompare(a.date));
+  const total=f.reduce((s,r)=>s+(r.amount||0),0);
+  const c=document.getElementById('receivedContainer');
+  if(!f.length){c.innerHTML='<div class="empty"><div class="ei">💰</div><p>لا توجد مبالغ مستلمة</p></div>';return;}
+  c.innerHTML=`<div style="padding:8px 15px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);">الإجمالي: <strong style="color:var(--green)">${fn(total)} دج</strong></div>
+  <table><thead><tr><th>التاريخ</th><th>المشروع</th><th>المبلغ</th><th>ملاحظة</th><th></th></tr></thead>
+  <tbody>${f.map(r=>{
+    const p=projects.find(p=>p.id==r.projectId);
+    return`<tr>
+      <td style="font-size:10px;color:var(--muted);">${fd(r.date)}</td>
+      <td style="font-size:11px;color:var(--accent);">${p?p.name:'—'}</td>
+      <td class="amc">${fn(r.amount)} دج</td>
+      <td style="color:var(--muted);font-size:11px;">${r.note||'—'}</td>
+      <td><button class="btn btn-re btn-sm" onclick="deleteReceived('${r.id}')">حذف</button></td>
+    </tr>`;
+  }).join('')}</tbody></table>`;
+}
+
+function deleteReceived(id){
+  if(!confirm('حذف هذا السجل؟'))return;
+  received=received.filter(r=>r.id!=id);
+  saveAndSync();renderReceived();renderRecKpis();renderFinancialSummary();renderProjGrid();showToast('🗑 تم الحذف');
+}
+
+function renderFinancialSummary(){
+  const c=document.getElementById('financialSummary');
+  if(!projects.length){c.innerHTML='';return;}
+  c.innerHTML=projects.map(p=>{
+    const totalRec=received.filter(r=>r.projectId==p.id).reduce((s,r)=>s+(r.amount||0),0);
+    const totalW=payments.filter(py=>py.projectId==p.id).reduce((s,py)=>s+(py.amount||0),0);
+    const totalSP=spurchases.filter(s=>s.projectId==p.id).reduce((s,sp)=>s+(sp.amount||0),0);
+    const totalIP=ipurchases.filter(i=>i.projectId==p.id).reduce((s,ip)=>s+(ip.amount||0),0);
+    const totalCost=totalW+totalSP+totalIP;
+    const bal=totalRec-totalCost;
+    return`<div class="sec" style="padding:14px;margin-bottom:12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <span style="font-size:13px;font-weight:700;">${p.name}</span>
+        <span class="badge ${p.status==='منجز'?'bgr':p.status==='موقوف'?'bre':'bbl'}">${p.status}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;font-size:11px;">
+        <div>💰 مستلم: <strong style="color:var(--green)">${fn(totalRec)} دج</strong></div>
+        <div>👷 أجور مدفوعة: <strong style="color:var(--red)">${fn(totalW)} دج</strong></div>
+        <div>🛒 مشتريات صغيرة: <strong style="color:var(--red)">${fn(totalSP)} دج</strong></div>
+        <div>🧾 فواتير: <strong style="color:var(--red)">${fn(totalIP)} دج</strong></div>
+        <div>💸 إجمالي المصاريف: <strong style="color:var(--red)">${fn(totalCost)} دج</strong></div>
+        <div>📊 الرصيد: <strong style="color:${bal>=0?'var(--green)':'var(--red)'}">${fn(bal)} دج</strong></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* EXPORT/IMPORT */
+function exportJSON(){
+  const b=new Blob([JSON.stringify({version:'1.0',exportDate:new Date().toISOString(),projects,workers,payments,spurchases,ipurchases,received},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`welding_backup_${ds(new Date())}.json`;a.click();
+  showToast('💾 تم التحميل');
+}
+function importJSON(event){
+  const file=event.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(d.projects)projects=d.projects;if(d.workers)workers=d.workers;
+      if(d.payments)payments=d.payments;if(d.spurchases)spurchases=d.spurchases;
+      if(d.ipurchases)ipurchases=d.ipurchases;if(d.received)received=d.received;
+      saveAndSync();renderAll();showToast('✅ تم الاستيراد');
+    }catch{showToast('❌ ملف غير صالح');}
+  };
+  r.readAsText(file);event.target.value='';
+}
+function resetAll(){
+  if(!confirm('حذف كل البيانات؟'))return;
+  projects=[];workers=[];payments=[];spurchases=[];ipurchases=[];received=[];
+  saveLocal();renderAll();showToast('🗑 تم الحذف');
+}
+
+/* NAV */
+function showPage(name,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ntab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');btn.classList.add('active');
+}
+function showLoading(t){document.getElementById('lovlTxt').textContent=t;document.getElementById('lovl').classList.add('show');}
+function hideLoading(){document.getElementById('lovl').classList.remove('show');}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+document.getElementById('editProjModal').addEventListener('click',e=>{if(e.target===document.getElementById('editProjModal'))closeEditProj();});
+document.getElementById('projModal').addEventListener('click',e=>{if(e.target===document.getElementById('projModal'))closePM();});
+</script>
+</body>
+</html>
